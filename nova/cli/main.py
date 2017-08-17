@@ -64,6 +64,8 @@ class NovaApp(CementApp):
 
         debug = TOGGLE_DEBUG
 
+        exit_on_close = True
+
 
 # Define the application object outside of main, as some libraries might wish
 # to import it as a global (rather than passing it into another class/func)

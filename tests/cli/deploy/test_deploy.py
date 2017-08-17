@@ -12,7 +12,6 @@ except ImportError:
 
 
 class NovaDeployTestCase(NovaTestCase):
-
     def setUp(self):
         self.manager_provider = TestManagerProvider()
         aws_manager_patcher = mock.patch(
@@ -23,39 +22,45 @@ class NovaDeployTestCase(NovaTestCase):
         self.addCleanup(aws_manager_patcher.stop)
 
     def test_deploy_no_args(self):
-        with get_test_app(argv=['deploy']) as app:
-            try:
-                app.run()
-            except NovaError as e:
-                self.assertEqual(e.message, INCORRECT_ARGS_USAGE)
+        with self.assertRaises(SystemExit) as exit_code:
+            with get_test_app(argv=['deploy']) as app:
+                try:
+                    app.run()
+                except NovaError as e:
+                    self.assertEqual(e.message, INCORRECT_ARGS_USAGE)
+        self.assertEqual(exit_code.exception.code, 0)
 
     def test_deploy(self):
-        nova_descriptor_file = '%s/nova.yml' % os.path.dirname(os.path.realpath(__file__))
-        with get_test_app(argv=[
-            'deploy',
-            'test-environment',
-            'test-stack',
-            '--file',
-            nova_descriptor_file
-        ]) as app:
-            app.run()
-        self.manager_provider.mock_aws_manager.create_deployment.assert_called_once_with(
-            'some-deploy-id',
-            'some-deployment-group',
-            mock.ANY,
-            'my-bucket',
-            'test-service/0.0.1.tar.gz'
-        )
+        with self.assertRaises(SystemExit) as exit_code:
+            nova_descriptor_file = '%s/nova.yml' % os.path.dirname(os.path.realpath(__file__))
+            with get_test_app(argv=[
+                'deploy',
+                'test-environment',
+                'test-stack',
+                '--file',
+                nova_descriptor_file
+            ]) as app:
+                app.run()
+            self.manager_provider.mock_aws_manager.create_deployment.assert_called_once_with(
+                'some-deploy-id',
+                'some-deployment-group',
+                mock.ANY,
+                'my-bucket',
+                'test-service/0.0.1.tar.gz'
+            )
+            self.assertEqual(exit_code.exception.code, 0)
 
     def test_no_deploy(self):
-        nova_descriptor_file = '%s/nova.yml' % os.path.dirname(os.path.realpath(__file__))
-        with get_test_app(argv=[
-            'deploy',
-            'test-environment',
-            'test-stack',
-            '--file',
-            nova_descriptor_file,
-            '--no-deployment'
-        ]) as app:
-            app.run()
-        self.manager_provider.mock_aws_manager.create_deployment.assert_not_called()
+        with self.assertRaises(SystemExit) as exit_code:
+            nova_descriptor_file = '%s/nova.yml' % os.path.dirname(os.path.realpath(__file__))
+            with get_test_app(argv=[
+                'deploy',
+                'test-environment',
+                'test-stack',
+                '--file',
+                nova_descriptor_file,
+                '--no-deployment'
+            ]) as app:
+                app.run()
+            self.manager_provider.mock_aws_manager.create_deployment.assert_not_called()
+            self.assertEqual(exit_code.exception.code, 0)
