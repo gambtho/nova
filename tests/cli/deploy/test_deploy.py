@@ -22,16 +22,15 @@ class NovaDeployTestCase(NovaTestCase):
         self.addCleanup(aws_manager_patcher.stop)
 
     def test_deploy_no_args(self):
-        with self.assertRaises(SystemExit) as exit_code:
+        with self.assertRaises(SystemExit):
             with get_test_app(argv=['deploy']) as app:
                 try:
                     app.run()
                 except NovaError as e:
                     self.assertEqual(e.message, INCORRECT_ARGS_USAGE)
-        self.assertEqual(exit_code.exception.code, 0)
 
     def test_deploy(self):
-        with self.assertRaises(SystemExit) as exit_code:
+        with self.assertRaises(SystemExit):
             nova_descriptor_file = '%s/nova.yml' % os.path.dirname(os.path.realpath(__file__))
             with get_test_app(argv=[
                 'deploy',
@@ -48,10 +47,9 @@ class NovaDeployTestCase(NovaTestCase):
                 'my-bucket',
                 'test-service/0.0.1.tar.gz'
             )
-            self.assertEqual(exit_code.exception.code, 0)
 
     def test_no_deploy(self):
-        with self.assertRaises(SystemExit) as exit_code:
+        with self.assertRaises(SystemExit):
             nova_descriptor_file = '%s/nova.yml' % os.path.dirname(os.path.realpath(__file__))
             with get_test_app(argv=[
                 'deploy',
@@ -63,4 +61,3 @@ class NovaDeployTestCase(NovaTestCase):
             ]) as app:
                 app.run()
             self.manager_provider.mock_aws_manager.create_deployment.assert_not_called()
-            self.assertEqual(exit_code.exception.code, 0)

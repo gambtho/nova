@@ -63,12 +63,12 @@ class NovaApp(CementApp):
         arg_handler = NovaArgHandler
 
         debug = TOGGLE_DEBUG
-
         exit_on_close = True
 
 
 # Define the application object outside of main, as some libraries might wish
 # to import it as a global (rather than passing it into another class/func)
+
 app = NovaApp()
 
 
@@ -84,14 +84,16 @@ def handle_exception(error):
     if type(error) is FrameworkError:
         # Catch framework errors and exit 1 (error)
         print('FrameworkError > %s' % error)
-        return 1
+        return 2
+    print('Unexpected Error > %s' % error)
+    return 2
 
 
 # noinspection PyBroadException
 def main():
     with app:
         # Default our exit status to 0 (non-error)
-        code = 0
+        exit_code = 0
         try:
             global sys
 
@@ -100,7 +102,7 @@ def main():
 
             app.run()
         except Exception as e:
-            code = handle_exception(e)
+            exit_code = handle_exception(e)
         finally:
             # Print an exception (if it occurred) and --debug was passed
             if app.debug:
@@ -109,13 +111,11 @@ def main():
                     traceback.print_exc()
 
         # Close the application
-        app.close(code)
+        app.close(exit_code)
 
 
 def get_test_app(**kw):
-    app = NovaApp(**kw)
-    return app
-
+    return NovaApp(**kw)
 
 if __name__ == '__main__':
     main()

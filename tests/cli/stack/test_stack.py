@@ -23,13 +23,12 @@ class NovaStackTestCase(NovaTestCase):
         self.addCleanup(aws_manager_patcher.stop)
 
     def test_stack_create_no_args(self):
-        with self.assertRaises(SystemExit) as exit_code:
+        with self.assertRaises(SystemExit):
             with get_test_app(argv=['stack', 'create']) as app:
                 try:
                     app.run()
                 except NovaError as e:
                     self.assertEqual(e.message, INCORRECT_CREATE_ARGS_USAGE)
-        self.assertEqual(exit_code.exception.code, 0)
 
     def test_stack_update_no_args(self):
         with self.assertRaises(SystemExit) as exit_code:
@@ -43,7 +42,7 @@ class NovaStackTestCase(NovaTestCase):
     def test_stack_create(self):
         self.manager_provider.mock_aws_manager.get_stack.return_value = StackResult("CREATE_COMPLETE")
         nova_descriptor_file = '%s/nova.yml' % os.path.dirname(os.path.realpath(__file__))
-        with self.assertRaises(SystemExit) as exit_code:
+        with self.assertRaises(SystemExit):
             with get_test_app(argv=[
                 'stack',
                 'create',
@@ -56,12 +55,11 @@ class NovaStackTestCase(NovaTestCase):
                 'test-service',
                 mock.ANY
             )
-        self.assertEqual(exit_code.exception.code, 0)
 
     def test_stack_update(self):
         self.manager_provider.mock_aws_manager.get_stack.return_value = StackResult("UPDATE_COMPLETE")
         nova_descriptor_file = '%s/nova.yml' % os.path.dirname(os.path.realpath(__file__))
-        with self.assertRaises(SystemExit) as exit_code:
+        with self.assertRaises(SystemExit):
             with get_test_app(argv=[
                 'stack',
                 'update',
@@ -76,4 +74,3 @@ class NovaStackTestCase(NovaTestCase):
                 mock.ANY,
                 mock.ANY
             )
-        self.assertEqual(exit_code.exception.code, 0)

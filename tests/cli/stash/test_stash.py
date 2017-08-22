@@ -15,7 +15,6 @@ class NovaStackTestCase(NovaTestCase):
                     self.assertEqual(e.message, INCORRECT_GET_ARGS_USAGE)
             self.assertEqual(exit_code.exception.code, 0)
 
-
     def test_stash_put(self):
         with self.assertRaises(SystemExit) as exit_code:
             with get_test_app(argv=['stash', 'put']) as app:

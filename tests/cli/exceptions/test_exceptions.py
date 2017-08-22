@@ -33,7 +33,7 @@ class NovaExceptionHandling(NovaTestCase):
                     code = handle_exception(e)
                 finally:
                     app.close(code)
-        self.assertEqual(exit_code.exception.code, 1)
+            self.assertEqual(exit_code.exception.code, 1)
 
     def test_exit_code_without_error(self):
         self.manager_provider.mock_aws_manager.get_stack.return_value = StackResult("CREATE_COMPLETE")
@@ -57,5 +57,5 @@ class NovaExceptionHandling(NovaTestCase):
                     code = handle_exception(e)
                 finally:
                     app.close(code)
-        self.assertEqual(exit_code.exception.code, 0)
+            self.assertEqual(exit_code.exception.code, 0)
 
